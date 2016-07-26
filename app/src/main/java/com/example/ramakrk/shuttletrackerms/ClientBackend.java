@@ -99,7 +99,7 @@ public class ClientBackend {
         }.start();
     }
 
-    private void StopGivingLocationData()
+    public void StopGivingLocationData()
     {
         timerForSendingLocationData.cancel();
     }

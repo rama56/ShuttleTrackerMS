@@ -30,7 +30,8 @@ public class MainPageActivity extends AppCompatActivity {
         driverButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent driverIntent = new Intent(v.getContext(),DriverActivity.class);
+                startActivityForResult(driverIntent,0);
             }
         });
     }

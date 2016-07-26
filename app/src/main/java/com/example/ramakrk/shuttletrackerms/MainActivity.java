@@ -1,14 +1,20 @@
 package com.example.ramakrk.shuttletrackerms;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.EditText;
+import android.widget.Spinner;
 
+//import com.google.android.gms.drive.internal.StringListResponse;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -23,10 +29,43 @@ public class MainActivity extends AppCompatActivity {
     private Button trackShuttle;
 
 
+    private void getRouteNumber() {
+        AlertDialog routeDialog = new AlertDialog.Builder(MainActivity.this).create();
+        routeDialog.setTitle("Set Route Number");
+        String[] availRoutes = {"1","2","3","4","5"};
 
+        final Spinner spinner = new Spinner(this);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,availRoutes);
+        spinner.setAdapter(spinnerAdapter);
+        routeDialog.setView(spinner);
+        routeDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "TRACK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                        editor.putString("TrackRoute",spinner.getSelectedItem().toString());
+                        editor.commit();
+                        dialog.dismiss();
+                        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        startActivityForResult(intent,0);
+                    }
+                });
+        routeDialog.show();
+    }
+
+    private void initialSetup() {
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        String getRoute = sharedPreferences.getString("TrackRoute","");
+        if(getRoute.equalsIgnoreCase("")) {
+            getRouteNumber();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        initialSetup();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         trackShuttle = (Button) findViewById(R.id.track);
@@ -52,17 +91,7 @@ public class MainActivity extends AppCompatActivity {
         trackShuttle.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                alertDialog.setTitle("Alert");
-                alertDialog.setMessage("Alert message to be shown");
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                alertDialog.show();
-
+                getRouteNumber();
             }
         });
     }
