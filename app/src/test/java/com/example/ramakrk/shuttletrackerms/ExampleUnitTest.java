@@ -12,4 +12,11 @@ public class ExampleUnitTest {
     public void addition_isCorrect() throws Exception {
         assertEquals(4, 2 + 2);
     }
+
+    @Test
+    public void GiveLocationDataWrapper() throws Exception
+    {
+        ClientBackend object = new ClientBackend();
+        //object.GiveLocationDataToDBWrapper("24");
+    }
 }

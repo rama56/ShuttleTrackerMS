@@ -22,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
     private GoogleMap employeeMap;
     private Button trackShuttle;
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,16 +35,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 employeeMap = googleMap;
-
                 // Add a marker in Sydney, Australia, and move the camera.
                 LatLng sydney = new LatLng(17.385, 78.486);
                 LatLng sydney1 = new LatLng(17.386, 78.489);
                 employeeMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
                 employeeMap.addMarker(new MarkerOptions().position(sydney1).title("You are here...."));
                 employeeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney,15.0f));
-
             }
         });
+
+        // Testing here by Rama. Don't erase for now.
+        //ClientBackend obj = new ClientBackend();
+        //obj.GiveLocationDataToDBWrapper(getBaseContext(), "24");
+        // Testing ends.
 
         trackShuttle.setOnClickListener(new OnClickListener() {
             @Override
