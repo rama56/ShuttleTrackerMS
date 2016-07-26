@@ -20,6 +20,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -77,7 +79,8 @@ public class MainActivity extends AppCompatActivity {
                 // Add a marker in Sydney, Australia, and move the camera.
                 LatLng sydney = new LatLng(17.385, 78.486);
                 LatLng sydney1 = new LatLng(17.386, 78.489);
-                employeeMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+                BitmapDescriptor bitmap;
+                employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.bus)).position(sydney).title("Marker in Sydney"));
                 employeeMap.addMarker(new MarkerOptions().position(sydney1).title("You are here...."));
                 employeeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney,15.0f));
             }

@@ -13,20 +13,27 @@
         android:id="@+id/map"
         tools:context=".MapsActivity"
         android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_alignParentTop="false"
-        android:layout_alignParentBottom="false"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        />
+        android:layout_alignParentStart="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/track"
         android:id="@+id/track"
-        android:layout_alignBottom="@+id/map"
+        android:layout_above="@+id/timeChange"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Updated 5 seconds ago"
+        android:id="@+id/timeChange"
+        android:textSize="@dimen/abc_action_bar_content_inset_material"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="#3775f3"
+        android:textColor="@color/abc_primary_text_material_dark" />
 
 </RelativeLayout>

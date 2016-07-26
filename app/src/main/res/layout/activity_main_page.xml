@@ -14,7 +14,8 @@
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:id="@+id/relativeLayout">
 
         <Button
             android:layout_width="wrap_content"
@@ -31,9 +32,22 @@
             android:text="Driver"
             android:id="@+id/navigateDriver"
             android:layout_centerVertical="true"
-            android:layout_alignLeft="@+id/navigatePassenger"
-            android:layout_alignStart="@+id/navigatePassenger"
             android:layout_alignRight="@+id/navigatePassenger"
-            android:layout_alignEnd="@+id/navigatePassenger" />
+            android:layout_alignEnd="@+id/navigatePassenger"
+            android:layout_alignLeft="@+id/navigatePassenger"
+            android:layout_alignStart="@+id/navigatePassenger" />
+
     </RelativeLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Track Route"
+        android:id="@+id/routeTrack"
+        android:layout_marginBottom="55dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/relativeLayout"
+        android:layout_alignEnd="@+id/relativeLayout"
+        android:layout_marginRight="53dp"
+        android:layout_marginEnd="53dp" />
 </RelativeLayout>
