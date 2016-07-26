@@ -3,6 +3,7 @@ package com.example.ramakrk.shuttletrackerms;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.CountDownTimer;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 //import com.google.android.gms.drive.internal.StringListResponse;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private GoogleMap employeeMap;
     private Button trackShuttle;
 
+    private CountDownTimer timerToDisplayStaleness = null;
 
     private void getRouteNumber() {
         AlertDialog routeDialog = new AlertDialog.Builder(MainActivity.this).create();
@@ -79,13 +82,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 employeeMap = googleMap;
-                // Add a marker in Sydney, Australia, and move the camera.
-                LatLng sydney = new LatLng(17.385, 78.486);
-                LatLng sydney1 = new LatLng(17.386, 78.489);
-                BitmapDescriptor bitmap;
-                employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.bus)).position(sydney).title("Marker in Sydney"));
-                employeeMap.addMarker(new MarkerOptions().position(sydney1).title("You are here...."));
-                employeeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney,15.0f));
 
                 SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
                 String RouteNumber = sharedPreferences.getString("TrackRoute","1");
@@ -108,6 +104,46 @@ public class MainActivity extends AppCompatActivity {
                 getRouteNumber();
             }
         });
+
+        UpdateLocationStalenessPeriodically(1000);
+    }
+
+    private void UpdateLocationStalenessPeriodically(int i)
+    {
+        timerToDisplayStaleness = new CountDownTimer(10000000, i) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+                Long locationStaleness = sharedPreferences.getLong("LocationStaleness",-1);
+
+                String stalenessString;
+                if(locationStaleness < 0)
+                {
+                    stalenessString = "Unknown";
+                }
+                else if(locationStaleness >= 86400)
+                {
+                    stalenessString = "More than a day ago.";
+                }
+                else
+                {
+                    long diff = locationStaleness;
+                    long sec = diff % 60;
+                    long min = (diff / 60) % 60;
+                    long hr = diff / (60 * 60);
+                    stalenessString =   String.format("Updated %1$02d:%2$02d:%3$02d ago..",hr,min,sec);
+                }
+
+                TextView object  = (TextView)findViewById(R.id.timeChange);
+                object.setText(stalenessString);
+            }
+
+            @Override
+            public void onFinish() {
+                timerToDisplayStaleness.start();
+            }
+        }.start();
+
     }
 
     CountDownTimer timerToGetData = null;
@@ -119,28 +155,48 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTick(long millisUntilFinished)
             {
-                ClientBackend object = new ClientBackend();
+                ClientBackend object = new ClientBackend(10,10);
                 ClientBackend.LocationData currentLocation = object.GetLocationDataFromDB(routeNumber);
                 ClientBackend.Coordinate currentPoint = currentLocation.point;
                 Date registeredTime = currentLocation.time;
                 Date currentTime = ClientBackend.getCurrentLocalTime();
 
-                
+                long differenceInSeconds = getDifference(registeredTime, currentTime);
+
                 // Use shared memory to store staleness time of location data.
                 SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                editor.putInt("LocationStaleness",0);
+                editor.putLong("LocationStaleness",differenceInSeconds);
                 editor.commit();
+
+                // Update the pin in the map.
+                LatLng bus = new LatLng(currentPoint.latitude, currentPoint.longitude);
+                Location user = ClientBackend.getCurrentLatLongFromGPS(getBaseContext());
+                LatLng myLocation = new LatLng(user.getLatitude(), user.getLongitude());
+                BitmapDescriptor bitmap;
+                employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.bus)).position(bus).title(routeNumber));
+                employeeMap.addMarker(new MarkerOptions().position(myLocation).title("You are here..."));
+                employeeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(bus,15.0f));
             }
 
             @Override
             public void onFinish()
             {
-
+                timerToGetData.start();
             }
-        }.start();
+        };
+        timerToGetData.start();
 
+    }
+
+    private long getDifference(Date early, Date late)
+    {
+        long gapInSeconds = 250;
+        if(late!=null && early!=null) {
+            gapInSeconds = (late.getTime() - early.getTime()) / 1000;
+        }
+        return gapInSeconds;
     }
 
 }

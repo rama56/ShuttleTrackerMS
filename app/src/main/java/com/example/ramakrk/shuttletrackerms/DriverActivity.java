@@ -23,6 +23,8 @@ public class DriverActivity extends AppCompatActivity {
 
     protected Button retrieveLocationButton;
 
+    ClientBackend clientBackendDriver;
+
     private void initialSetup() {
         SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
         String getRoute = sharedPreferences.getString("DriverRoute", "1");
@@ -41,19 +43,18 @@ public class DriverActivity extends AppCompatActivity {
             public void onClick(View v) {
                 SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                showCurrentLocation();
+                //showCurrentLocation();
 
                 EditText editText = (EditText) findViewById(R.id.driverRoute);
                 String routeID = editText.getText().toString();
                 editor.putString("DriverRoute", routeID);
                 editor.commit();
-                ClientBackend clientBackend = new ClientBackend(latitude,longitude);
-                clientBackend.GiveLocationDataToDBWrapper(getBaseContext(), routeID);
+                clientBackendDriver = new ClientBackend(); //latitude,longitude);
+                clientBackendDriver.GiveLocationDataToDBWrapper(getBaseContext(), routeID);
             }
         });
-        retrieveLocationButton = (Button) findViewById(R.id.retrieve);
 
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        /*locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -71,18 +72,19 @@ public class DriverActivity extends AppCompatActivity {
                 (float) MINIMUM_DISTANCE_CHANGE_FOR_UPDATES,
                 new MyLocationListener()
         );
-
-
+*/
         Button endButon = (Button) findViewById(R.id.endTravel);
         endButon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ClientBackend clientBackend = new ClientBackend(latitude,longitude);
-                clientBackend.StopGivingLocationData();
+                if(clientBackendDriver != null) {
+                    clientBackendDriver.StopGivingLocationData();
+                }
             }
         });
     }
 
+/*
     protected void showCurrentLocation() {
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -138,6 +140,7 @@ public class DriverActivity extends AppCompatActivity {
         }
 
     }
+*/
 
 
 }

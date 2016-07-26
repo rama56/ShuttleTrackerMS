@@ -18,6 +18,8 @@ import org.json.JSONObject;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -37,12 +39,10 @@ public class ClientBackend {
 //    {
 //
 //    }
-    public double latitude;
-    public double longitude;
-    public ClientBackend(double Clatitude,double Clongitude)
+
+    public ClientBackend()
     {
-        this.latitude=Clatitude;
-        this.longitude=Clongitude;
+
     }
 
     private CountDownTimer timerForSendingLocationData;
@@ -52,6 +52,7 @@ public class ClientBackend {
         {
             this.point = Point;
             this.busRoute = BusRoute;
+            this.time= time;
         }
         Date time;
         Coordinate point;
@@ -129,38 +130,41 @@ public class ClientBackend {
 //        return CurrentPosition;
     }
 
+    private Date parseDate(String date)
+    {
+        try
+        {
+            return new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").parse(date);
+        }
+        catch (ParseException e)
+        {
+            return null;
+        }
+
+    }
+
     // Methods called by bus driver.
     public void GiveLocationDataToDBWrapper(final Context context, final String busRoute) throws SecurityException {
         timerForSendingLocationData = new CountDownTimer(10000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                // Get GPS data.
                 Log.e("GiveLocationDataTimer","Time left on this tick " + millisUntilFinished);
-                LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-                Location location = null;
-                try {
-                    if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-                    {
-                        Log.e("ClientBackend","Permission Denied For Fine/Coarse Location");
-                        return;
-                    }
-                    location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                }
-                catch (Exception e)
-                {
-                    Log.e("ClientBackend","Exception" + e);
-                }
 
-                double dlongitude = longitude;
-                double dlatitude = latitude;
-                String gps=longitude+","+latitude;
+                // Get GPS data.
+                Location location = getCurrentLatLongFromGPS(context);
+
+                double dlongitude = location.getLatitude();  //longitude;
+                double dlatitude = location.getLongitude();  //latitude;
+                String gps = dlatitude + "," + dlongitude;
+
                 //Toast.makeText(,"Got the param"+gps,Toast.LENGTH_LONG).show();
+
                 Log.d(gps,"GPS Value");
 
                 // Get Current time
                 Date currentTime = getCurrentLocalTime();
 
-                GiveLocationDataToDB(new LocationData (new Coordinate(1.1,2.2), busRoute, currentTime));
+                GiveLocationDataToDB(new LocationData (new Coordinate(dlatitude,dlongitude), busRoute, currentTime));
             }
 
             @Override
@@ -169,6 +173,7 @@ public class ClientBackend {
             }
         }.start();
     }
+
 
     public void StopGivingLocationData()
     {
@@ -202,11 +207,38 @@ public class ClientBackend {
         Date currentTime = calendarObject.getTime();
         return currentTime;
     }
+
+    public static Date getCurrentLocalTime(int goBackSeconds)
+    {
+        Calendar calendarObject = Calendar.getInstance();
+        calendarObject.add(Calendar.SECOND, -goBackSeconds);
+        Date currentTime = calendarObject.getTime();
+        return currentTime;
+    }
+
+    public static Location getCurrentLatLongFromGPS(Context context)
+    {
+        LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        Location location = null;
+        try {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            {
+                Log.e("ClientBackend","Permission Denied For Fine/Coarse Location");
+                return null;
+            }
+            location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
+        catch (Exception e)
+        {
+            Log.e("ClientBackend","Exception" + e);
+        }
+        return location;
+    }
     class GetPosition extends AsyncTask<String, String, Void>
     {
         LocationData returnable;
         String busRoute;
-        final String url = "http://shuttletracker.netau.net/GetPosition.php";
+        final String url = "https://shuttletracker.netau.net/GetPosition.php";
 
         GetPosition(String busRoute)
         {
@@ -266,5 +298,31 @@ public class ClientBackend {
         }
     }
 
-}
+    public static Date getCurrentLocalTime(int goBackSeconds)
+    {
+        Calendar calendarObject = Calendar.getInstance();
+        calendarObject.add(Calendar.SECOND, -goBackSeconds);
+        Date currentTime = calendarObject.getTime();
+        return currentTime;
+    }
 
+    public static Location getCurrentLatLongFromGPS(Context context)
+    {
+        LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        Location location = null;
+        try {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            {
+                Log.e("ClientBackend","Permission Denied For Fine/Coarse Location");
+                return null;
+            }
+            location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
+        catch (Exception e)
+        {
+            Log.e("ClientBackend","Exception" + e);
+        }
+        return location;
+    }
+
+}
