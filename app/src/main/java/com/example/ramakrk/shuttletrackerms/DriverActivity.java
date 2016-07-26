@@ -41,19 +41,18 @@ public class DriverActivity extends AppCompatActivity {
             public void onClick(View v) {
                 SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                showCurrentLocation();
+                //showCurrentLocation();
 
                 EditText editText = (EditText) findViewById(R.id.driverRoute);
                 String routeID = editText.getText().toString();
                 editor.putString("DriverRoute", routeID);
                 editor.commit();
-                ClientBackend clientBackend = new ClientBackend(latitude,longitude);
+                ClientBackend clientBackend = new ClientBackend(); //latitude,longitude);
                 clientBackend.GiveLocationDataToDBWrapper(getBaseContext(), routeID);
             }
         });
-        retrieveLocationButton = (Button) findViewById(R.id.retrieve);
 
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        /*locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -80,9 +79,10 @@ public class DriverActivity extends AppCompatActivity {
                 ClientBackend clientBackend = new ClientBackend(latitude,longitude);
                 clientBackend.StopGivingLocationData();
             }
-        });
+        });*/
     }
 
+/*
     protected void showCurrentLocation() {
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -138,6 +138,7 @@ public class DriverActivity extends AppCompatActivity {
         }
 
     }
+*/
 
 
 }
