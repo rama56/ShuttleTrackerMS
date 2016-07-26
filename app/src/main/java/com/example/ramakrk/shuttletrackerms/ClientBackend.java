@@ -10,6 +10,8 @@ import android.os.CountDownTimer;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.logging.Logger;
 
 /**
@@ -24,18 +26,18 @@ public class ClientBackend {
 
     private CountDownTimer timerForSendingLocationData;
 
-    private class LocationData {
-        public LocationData(Coordinate Point, String BusRoute) {
+    public class LocationData {
+        public LocationData(Coordinate Point, String BusRoute, Date time)
+        {
             this.point = Point;
             this.busRoute = BusRoute;
         }
-
+        Date time;
         Coordinate point;
         String busRoute;    //TODO: Make bus routes as enums instead of strings.
-
     }
 
-    private class Coordinate {
+    public class Coordinate {
         public Coordinate(double Latitude, double Longitude) {
             this.latitude = Latitude;
             this.longitude = Longitude;
@@ -55,7 +57,7 @@ public class ClientBackend {
 
         if (1 == 1 /*if HTTP response is valid*/) {
             // Update returnable variable.
-            returnable = new LocationData(new Coordinate(4.5, 6.5), "dummyBus");
+            //returnable = new LocationData(new Coordinate(4.5, 6.5), "dummyBus");
         }
         return returnable;
     }
@@ -66,7 +68,7 @@ public class ClientBackend {
             @Override
             public void onTick(long millisUntilFinished) {
                 // Get GPS data.
-
+                Log.e("GiveLocationDataTimer","Time left on this tick " + millisUntilFinished);
                 LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
                 Location location = null;
                 try {
@@ -82,14 +84,16 @@ public class ClientBackend {
                     Log.e("ClientBackend","Exception" + e);
                 }
 
-                double longitude = location.getLongitude();
-                double latitude = location.getLatitude();
+                double longitude, latitude;
+                if(location !=null) {
+                    longitude = location.getLongitude();
+                    latitude = location.getLatitude();
+                }
 
                 // Get Current time
+                Date currentTime = getCurrentLocalTime();
 
-
-
-                GiveLocationDataToDB(busRoute, new LocationData (new Coordinate(1.1,2.2), busRoute));
+                GiveLocationDataToDB(new LocationData (new Coordinate(1.1,2.2), busRoute, currentTime));
             }
 
             @Override
@@ -104,7 +108,7 @@ public class ClientBackend {
         timerForSendingLocationData.cancel();
     }
 
-    private boolean GiveLocationDataToDB(String busRoute, LocationData location)
+    private boolean GiveLocationDataToDB(LocationData location)
     {
         boolean isSuccess = false;
         int retryCount = 5;
@@ -123,6 +127,13 @@ public class ClientBackend {
             retryCount--;
         }
         return isSuccess;
+    }
+
+    public static Date getCurrentLocalTime()
+    {
+        Calendar calendarObject = Calendar.getInstance();
+        Date currentTime = calendarObject.getTime();
+        return currentTime;
     }
 
 
