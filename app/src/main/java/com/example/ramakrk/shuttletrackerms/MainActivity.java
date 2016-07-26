@@ -88,9 +88,9 @@ public class MainActivity extends AppCompatActivity {
                 employeeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney,15.0f));
 
                 SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-                String RouteNumber = sharedPreferences.getString("TrackRoute","");
+                String RouteNumber = sharedPreferences.getString("TrackRoute","1");
                 // Call a function to periodically update the bus location on Map.
-                //UpdateBusLocationPeriodically(RouteNumber);
+                UpdateBusLocationPeriodically(RouteNumber);
             }
 
         });
