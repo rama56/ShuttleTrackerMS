@@ -9,6 +9,7 @@ import android.location.LocationManager;
 import android.os.CountDownTimer;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.logging.Logger;
 
@@ -21,6 +22,13 @@ public class ClientBackend {
 //    {
 //
 //    }
+    public double latitude;
+    public double longitude;
+    public ClientBackend(double Clatitude,double Clongitude)
+    {
+        this.latitude=Clatitude;
+        this.longitude=Clongitude;
+    }
 
     private CountDownTimer timerForSendingLocationData;
 
@@ -82,8 +90,11 @@ public class ClientBackend {
                     Log.e("ClientBackend","Exception" + e);
                 }
 
-                double longitude = location.getLongitude();
-                double latitude = location.getLatitude();
+                double dlongitude = longitude;
+                double dlatitude = latitude;
+                String gps=longitude+","+latitude;
+                //Toast.makeText(,"Got the param"+gps,Toast.LENGTH_LONG).show();
+                Log.d(gps,"GPS Value");
 
                 // Get Current time
 
