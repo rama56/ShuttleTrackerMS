@@ -82,16 +82,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 employeeMap = googleMap;
-                // Add a marker in Sydney, Australia, and move the camera.
-                LatLng sydney = new LatLng(17.385, 78.486);
-                LatLng sydney1 = new LatLng(17.386, 78.489);
-                BitmapDescriptor bitmap;
-                employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.bus)).position(sydney).title("Marker in Sydney"));
-                employeeMap.addMarker(new MarkerOptions().position(sydney1).title("You are here...."));
-                employeeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney,15.0f));
 
                 SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-                String RouteNumber = sharedPreferences.getString("TrackRoute","");
+                String RouteNumber = sharedPreferences.getString("TrackRoute","1");
                 // Call a function to periodically update the bus location on Map.
                 UpdateBusLocationPeriodically(RouteNumber);
             }
