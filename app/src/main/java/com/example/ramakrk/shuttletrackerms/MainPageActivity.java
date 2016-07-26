@@ -10,6 +10,7 @@ public class MainPageActivity extends AppCompatActivity {
 
     Button passengerButton;
     Button driverButton;
+    Button routeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +18,7 @@ public class MainPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_page);
         passengerButton = (Button) findViewById(R.id.navigatePassenger);
         driverButton = (Button) findViewById(R.id.navigateDriver);
+        routeButton = (Button) findViewById(R.id.routeTrack);
 
         passengerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -34,5 +36,7 @@ public class MainPageActivity extends AppCompatActivity {
                 startActivityForResult(driverIntent,0);
             }
         });
+
+        
     }
 }
