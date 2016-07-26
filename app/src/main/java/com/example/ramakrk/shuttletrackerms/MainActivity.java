@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTick(long millisUntilFinished)
             {
-                ClientBackend object = new ClientBackend(10,10);
+                ClientBackend object = new ClientBackend();
                 ClientBackend.LocationData currentLocation = object.GetLocationDataFromDB(routeNumber);
                 ClientBackend.Coordinate currentPoint = currentLocation.point;
                 Date registeredTime = currentLocation.time;

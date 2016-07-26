@@ -75,17 +75,18 @@ public class ClientBackend {
 
     // Methods called by passengers waiting for the bus.
     public LocationData GetLocationDataFromDB(final String busRoute) {
-        final String url = "http://shuttletracker.netau.net/GetPosition.php";
-
-        // Create and perform a HTTP request.
-        JSONObject request = new JSONObject();
-        GetPosition gp=new GetPosition(busRoute);
-        try {
-            gp.execute().get(5000,TimeUnit.MILLISECONDS);
-        }catch (Exception e){
-            Log.e("CB",e.getMessage());
-        }
-        return CurrentPosition;
+        return new LocationData(new Coordinate(17.43,78.36),"5", parseDate("2016-07-26-19-01-00"));
+//        final String url = "http://shuttletracker.netau.net/GetPosition.php";
+//
+//        // Create and perform a HTTP request.
+//        JSONObject request = new JSONObject();
+//        GetPosition gp=new GetPosition(busRoute);
+//        try {
+//            gp.execute().get(5000,TimeUnit.MILLISECONDS);
+//        }catch (Exception e){
+//            Log.e("CB",e.getMessage());
+//        }
+//        return CurrentPosition;
 
 
 //        java.util.List<NameValuePair> requestParams = new ArrayList<NameValuePair>();
@@ -216,24 +217,6 @@ public class ClientBackend {
         return currentTime;
     }
 
-    public static Location getCurrentLatLongFromGPS(Context context)
-    {
-        LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        Location location = null;
-        try {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            {
-                Log.e("ClientBackend","Permission Denied For Fine/Coarse Location");
-                return null;
-            }
-            location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        }
-        catch (Exception e)
-        {
-            Log.e("ClientBackend","Exception" + e);
-        }
-        return location;
-    }
     class GetPosition extends AsyncTask<String, String, Void>
     {
         LocationData returnable;
@@ -296,14 +279,6 @@ public class ClientBackend {
         protected void onPostExecute(Void s) {
             super.onPostExecute(s);
         }
-    }
-
-    public static Date getCurrentLocalTime(int goBackSeconds)
-    {
-        Calendar calendarObject = Calendar.getInstance();
-        calendarObject.add(Calendar.SECOND, -goBackSeconds);
-        Date currentTime = calendarObject.getTime();
-        return currentTime;
     }
 
     public static Location getCurrentLatLongFromGPS(Context context)
