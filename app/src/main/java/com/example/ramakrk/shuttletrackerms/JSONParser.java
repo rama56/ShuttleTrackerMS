@@ -23,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
+import android.widget.Toast;
 
 public class JSONParser {
 
@@ -65,9 +66,11 @@ public class JSONParser {
 				url += "?" + paramString;
 				HttpGet httpGet = new HttpGet(url);
 
-				HttpResponse httpResponse = httpClient.execute(httpGet);
-				HttpEntity httpEntity = httpResponse.getEntity();
-				is = httpEntity.getContent();
+
+					HttpResponse httpResponse = httpClient.execute(httpGet);
+					HttpEntity httpEntity = httpResponse.getEntity();
+					is = httpEntity.getContent();
+				
 			}			
 			
 

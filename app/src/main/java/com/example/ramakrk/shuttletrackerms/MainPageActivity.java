@@ -8,6 +8,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainPageActivity extends AppCompatActivity {
 
@@ -29,11 +30,12 @@ public class MainPageActivity extends AppCompatActivity {
 
         passengerButton = (Button) findViewById(R.id.navigatePassenger);
         driverButton = (Button) findViewById(R.id.navigateDriver);
-        routeButton = (Button) findViewById(R.id.routeTrack);
+        //routeButton = (Button) findViewById(R.id.routeTrack);
 
         passengerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(MainPageActivity.this,"Tracking shuttle...",Toast.LENGTH_LONG).show();
                 Intent passengerIntent = new Intent(v.getContext(),MainActivity.class);
                 startActivityForResult(passengerIntent,0);
 
@@ -43,6 +45,7 @@ public class MainPageActivity extends AppCompatActivity {
         driverButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(MainPageActivity.this,"Broadcasting Location...",Toast.LENGTH_LONG).show();
                 Intent driverIntent = new Intent(v.getContext(),DriverActivity.class);
                 startActivityForResult(driverIntent,0);
             }
