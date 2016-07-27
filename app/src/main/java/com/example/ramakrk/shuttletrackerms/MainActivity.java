@@ -40,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
     private void getRouteNumber() {
         AlertDialog routeDialog = new AlertDialog.Builder(MainActivity.this).create();
         routeDialog.setTitle("Set Route Number");
-        String[] availRoutes = {"1","2","3","4","5"};
+        String[] availRoutes = {"1","2","3","4","5","6","7","8","9","10",
+                                "11","12","13","14","15","16","17","18","19","20","21","22","23","24"};
 
         final Spinner spinner = new Spinner(this);
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,availRoutes);
