@@ -61,7 +61,7 @@ public class ClientBackend {
 
     private CountDownTimer timerForSendingLocationData;
 
-    public class LocationData {
+    public static class LocationData {
         public LocationData(Coordinate Point, String BusRoute, Date time)
         {
             this.point = Point;
@@ -74,7 +74,7 @@ public class ClientBackend {
 
     }
 
-    public class Coordinate {
+    public static class Coordinate {
         public Coordinate(double Latitude, double Longitude) {
             this.latitude = Latitude;
             this.longitude = Longitude;
@@ -115,7 +115,7 @@ public class ClientBackend {
 
     }
 
-    private Date parseDate(String date)
+    public static Date parseDate(String date)
     {
         try
         {
@@ -181,7 +181,7 @@ public class ClientBackend {
         timerForSendingLocationData.cancel();
     }
 
-    private boolean GiveLocationDataToDB(LocationData location)
+    public boolean GiveLocationDataToDB(LocationData location)
     {
         boolean isSuccess = false;
         int retryCount = 5;
