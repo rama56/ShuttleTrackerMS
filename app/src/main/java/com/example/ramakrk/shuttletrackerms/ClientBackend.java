@@ -39,9 +39,9 @@ public class ClientBackend {
 
     private static Context contextOfInstantiator;
 
-    //public ClientBackend(Context c) {
-    //    this.contextOfInstantiator = c;
-    //}
+    public ClientBackend(Context c) {
+        this.contextOfInstantiator = c;
+    }
 
     JSONParser jsonParser = new JSONParser();
     final String TAG_success = "success";
