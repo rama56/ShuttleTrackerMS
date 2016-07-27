@@ -2,6 +2,7 @@ package com.example.ramakrk.shuttletrackerms;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 ;
@@ -39,9 +40,7 @@ public class ClientBackend {
 
     private static Context contextOfInstantiator;
 
-    public ClientBackend(Context c) {
-        this.contextOfInstantiator = c;
-    }
+
 
     JSONParser jsonParser = new JSONParser();
     final String TAG_success = "success";
@@ -130,8 +129,10 @@ public class ClientBackend {
     }
 
     // Methods called by bus driver.
-    public void GiveLocationDataToDBWrapper(final Context context, final String busRoute) throws SecurityException {
-        timerForSendingLocationData = new CountDownTimer(10000, 1000) {
+    public void GiveLocationDataToDBWrapper(final Context context, final String busRoute) throws SecurityException
+    {
+        timerForSendingLocationData = new CountDownTimer(10000, 1000)
+        {
             @Override
             public void onTick(long millisUntilFinished) {
                 Log.e("GiveLocationDataTimer", "Time left on this tick " + millisUntilFinished);
@@ -143,12 +144,11 @@ public class ClientBackend {
 //                double dlatitude = location.getLongitude();  //latitude;
                 if (location == null)
                 {
-                    // DriverActivity dv= new DriverActivity();
-                 //latitude;
 
-                    Log.d("0,0", "GPS VALUE IS NULL");
-                    //showToastMethod();
-                    //showWarningAlert(contextOfInstantiator);
+                    Log.d("0,0", millisUntilFinished + "GPS VALUE IS NULL");
+                    //Checkforconnection(context);
+
+
                 }
                 else
                 {
@@ -157,7 +157,7 @@ public class ClientBackend {
                     String gps = dlatitude + "," + dlongitude;
 
                     // We now have a non-null location object.
-                    //Toast.makeText(,"Got the param"+gps,Toast.LENGTH_LONG).show();
+
 
                     Log.d(gps, "GPS Value");
 
@@ -170,7 +170,7 @@ public class ClientBackend {
 
             @Override
             public void onFinish() {
-                timerForSendingLocationData.start();
+              //  timerForSendingLocationData.start();
             }
         }.start();
     }
@@ -374,18 +374,24 @@ public class ClientBackend {
         }
         return location;
     }
-    private void showWarningAlert(Context context) { //Added argument
-        //DriverActivity driverActivity=null;
-        AlertDialog alertDialog = new AlertDialog.Builder(context).create(); //Use context
-        alertDialog.setTitle("Error,Check connection");
-        alertDialog.setMessage("Turn on GPS or Check network Connection");
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
+    private void Checkforconnection(Context connectioncontext) {
+        Location location = ClientBackend.getCurrentLatLongFromGPS(connectioncontext);
+        if(location==null)
+        {
+            Log.d("0,0","GPS VALUE IS NULL");
+            Toast.makeText(connectioncontext, "Turn on GPS or Check network connection", Toast.LENGTH_SHORT).show();
+            AlertDialog alertDialog = new AlertDialog.Builder(connectioncontext).create(); //Use context
+            alertDialog.setTitle("Oops..Check your connection");
+            alertDialog.setMessage("Turn on GPS or Check network Connection");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
+        }
     }
+
 
 }

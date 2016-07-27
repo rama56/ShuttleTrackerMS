@@ -1,6 +1,10 @@
 package com.example.ramakrk.shuttletrackerms;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -9,6 +13,7 @@ import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -18,12 +23,9 @@ import android.widget.Toast;
 import android.support.v4.widget.Space;
 
 public class DriverActivity extends AppCompatActivity {
-    private static final double MINIMUM_DISTANCE_CHANGE_FOR_UPDATES = 0.1; // in Meters
-    private static final long MINIMUM_TIME_BETWEEN_UPDATES = 1000; // in Milliseconds
 
     protected LocationManager locationManager;
     public double latitude,longitude;
-
     protected Button retrieveLocationButton;
 
     ClientBackend clientBackendDriver;
@@ -53,7 +55,7 @@ public class DriverActivity extends AppCompatActivity {
                 SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 //showCurrentLocation();
-
+                Checkforconnection();
                 Spinner spinner = (Spinner) findViewById(R.id.driverRoute);
                 String routeID = spinner.getSelectedItem().toString();
                 editor.putString("DriverRoute", routeID);
@@ -74,11 +76,29 @@ public class DriverActivity extends AppCompatActivity {
         });
     }
 
-public void onBackPressed()
-{
-    // code here to show dialog
-    super.onBackPressed();  // optional depending on your needs
-    finish();
-}
+    private void Checkforconnection() {
+        Location location = ClientBackend.getCurrentLatLongFromGPS(DriverActivity.this);
+        if(location==null)
+        {
+            Log.d("0,0","GPS VALUE IS NULL");
+            AlertDialog alertDialog = new AlertDialog.Builder(DriverActivity.this).create(); //Use context
+            alertDialog.setTitle("Oops..Check your connection");
+            alertDialog.setMessage("Turn on GPS or Check network Connection");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
+        }
+    }
+
+    public void onBackPressed()
+    {
+        super.onBackPressed();
+        Intent intent = new Intent(DriverActivity.this,MainPageActivity.class);
+        startActivity(intent);
+    }
 
 }

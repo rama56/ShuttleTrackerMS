@@ -63,19 +63,18 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Where&apos;s my bus??"
+            android:text="@string/where_apos_s_my_bus"
             android:id="@+id/title"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginLeft="42dp"
-            android:layout_marginStart="42dp"
-            android:layout_marginTop="37dp"
-            android:layout_alignRight="@+id/routeTrack"
-            android:layout_alignEnd="@+id/routeTrack"
+            android:layout_marginTop="35dp"
             android:textColor="@color/abc_search_url_text"
             android:textIsSelectable="false"
-            android:textSize="@dimen/abc_action_button_min_width_material" />
+            android:textSize="@dimen/abc_action_button_min_width_overflow_material"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_toEndOf="@+id/navigatePassenger"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
     </RelativeLayout>
 
