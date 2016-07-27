@@ -21,12 +21,12 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Route Number"
+            android:text="Select Route Number"
             android:id="@+id/textView"
-            android:layout_alignParentTop="true"
-            android:layout_alignRight="@+id/startTravel"
-            android:layout_alignEnd="@+id/startTravel"
-            android:layout_marginTop="62dp" />
+            android:textSize="@dimen/activity_horizontal_margin"
+            android:layout_above="@+id/driverRoute"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="48dp" />
 
         <Button
             android:layout_width="wrap_content"
@@ -46,14 +46,13 @@
             android:layout_alignLeft="@+id/startTravel"
             android:layout_alignStart="@+id/startTravel" />
 
-        <EditText
+        <Spinner
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:ems="10"
             android:id="@+id/driverRoute"
-            android:layout_below="@+id/textView"
+            android:layout_above="@+id/startTravel"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="58dp" />
+            android:spinnerMode="dropdown" />
     </RelativeLayout>
 </RelativeLayout>
+
