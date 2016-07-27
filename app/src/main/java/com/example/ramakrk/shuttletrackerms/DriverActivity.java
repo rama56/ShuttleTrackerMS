@@ -63,25 +63,6 @@ public class DriverActivity extends AppCompatActivity {
             }
         });
 
-        /*locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        locationManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER,
-                MINIMUM_TIME_BETWEEN_UPDATES,
-                (float) MINIMUM_DISTANCE_CHANGE_FOR_UPDATES,
-                new MyLocationListener()
-        );
-*/
         Button endButon = (Button) findViewById(R.id.endTravel);
         endButon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,63 +74,11 @@ public class DriverActivity extends AppCompatActivity {
         });
     }
 
-/*
-    protected void showCurrentLocation() {
-
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-        if (location != null) {
-            String message = String.format(
-                    "Current Location \n Longitude: %1$s \n Latitude: %2$s",
-                    location.getLongitude(), location.getLatitude()
-            );
-            latitude=location.getLatitude();
-            longitude=location.getLongitude();
-            Toast.makeText(DriverActivity.this, message,
-                    Toast.LENGTH_LONG).show();
-        }
-
-
-    }
-    private class MyLocationListener implements LocationListener {
-
-        public void onLocationChanged(Location location) {
-            String message = String.format(
-                    "New Location \n Longitude: %1$s \n Latitude: %2$s",
-                    location.getLongitude(), location.getLatitude()
-            );
-            Toast.makeText(DriverActivity.this, message, Toast.LENGTH_LONG).show();
-        }
-
-        public void onStatusChanged(String s, int i, Bundle b) {
-            Toast.makeText(DriverActivity.this, "Provider status changed",
-                    Toast.LENGTH_LONG).show();
-        }
-
-        public void onProviderDisabled(String s) {
-            Toast.makeText(DriverActivity.this,
-                    "Provider disabled by the user. GPS turned off",
-                    Toast.LENGTH_LONG).show();
-        }
-
-        public void onProviderEnabled(String s) {
-            Toast.makeText(DriverActivity.this,
-                    "Provider enabled by the user. GPS turned on",
-                    Toast.LENGTH_LONG).show();
-        }
-
-    }
-*/
-
+public void onBackPressed()
+{
+    // code here to show dialog
+    super.onBackPressed();  // optional depending on your needs
+    finish();
+}
 
 }

@@ -2,19 +2,24 @@ package com.example.ramakrk.shuttletrackerms;
 
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.CountDownTimer;
 import android.support.v4.app.ActivityCompat;
+
 import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.sql.Driver;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,6 +37,12 @@ import org.apache.http.message.BasicNameValuePair;
  */
 public class ClientBackend {
 
+    private static Context contextOfInstantiator;
+
+    //public ClientBackend(Context c) {
+    //    this.contextOfInstantiator = c;
+    //}
+
     JSONParser jsonParser = new JSONParser();
     final String TAG_success = "success";
 
@@ -44,6 +55,10 @@ public class ClientBackend {
     {
 
     }
+
+//    public static void showToastMethod() {
+//        Toast.makeText(contextOfInstantiator, "Turn on GPS or Check network connection", Toast.LENGTH_SHORT).show();
+//    }
 
     private CountDownTimer timerForSendingLocationData;
 
@@ -149,23 +164,35 @@ public class ClientBackend {
         timerForSendingLocationData = new CountDownTimer(10000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                Log.e("GiveLocationDataTimer","Time left on this tick " + millisUntilFinished);
+                Log.e("GiveLocationDataTimer", "Time left on this tick " + millisUntilFinished);
 
                 // Get GPS data.
                 Location location = getCurrentLatLongFromGPS(context);
+                if (location == null)
+                {
+                    // DriverActivity dv= new DriverActivity();
+                 //latitude;
 
-                double dlongitude = location.getLatitude();  //longitude;
-                double dlatitude = location.getLongitude();  //latitude;
-                String gps = dlatitude + "," + dlongitude;
+                    Log.d("0,0", "GPS VALUE IS NULL");
+                    //showToastMethod();
+                    //showWarningAlert(contextOfInstantiator);
+                }
+                else
+                {
+                    double dlongitude = location.getLatitude();  //longitude;
+                    double dlatitude = location.getLongitude();  //latitude;
+                    String gps = dlatitude + "," + dlongitude;
 
-                //Toast.makeText(,"Got the param"+gps,Toast.LENGTH_LONG).show();
+                    // We now have a non-null location object.
+                    //Toast.makeText(,"Got the param"+gps,Toast.LENGTH_LONG).show();
 
-                Log.d(gps,"GPS Value");
+                    Log.d(gps, "GPS Value");
 
-                // Get Current time
-                Date currentTime = getCurrentLocalTime();
+                    // Get Current time
+                    Date currentTime = getCurrentLocalTime();
 
-                GiveLocationDataToDB(new LocationData (new Coordinate(dlatitude,dlongitude), busRoute, currentTime));
+                    GiveLocationDataToDB(new LocationData(new Coordinate(dlatitude, dlongitude), busRoute, currentTime));
+                }
             }
 
             @Override
@@ -298,6 +325,19 @@ public class ClientBackend {
             Log.e("ClientBackend","Exception" + e);
         }
         return location;
+    }
+    private void showWarningAlert(Context context) { //Added argument
+        //DriverActivity driverActivity=null;
+        AlertDialog alertDialog = new AlertDialog.Builder(context).create(); //Use context
+        alertDialog.setTitle("Error,Check connection");
+        alertDialog.setMessage("Turn on GPS or Check network Connection");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 
 }

@@ -12,28 +12,29 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true">
+        android:background="@color/abc_search_url_text_normal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Select Route Number"
             android:id="@+id/textView"
-            android:textSize="@dimen/activity_horizontal_margin"
-            android:layout_above="@+id/driverRoute"
+            android:textSize="@dimen/abc_text_size_headline_material"
+            android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="48dp" />
+            android:layout_marginTop="88dp"
+            android:textIsSelectable="false" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="START"
             android:id="@+id/startTravel"
-            android:layout_centerVertical="true"
+            android:layout_marginTop="59dp"
+            android:layout_below="@+id/driverRoute"
             android:layout_centerHorizontal="true" />
 
         <Button
@@ -41,18 +42,19 @@
             android:layout_height="wrap_content"
             android:text="END"
             android:id="@+id/endTravel"
-            android:layout_marginTop="32dp"
-            android:layout_below="@+id/startTravel"
+            android:layout_alignParentBottom="true"
             android:layout_alignLeft="@+id/startTravel"
             android:layout_alignStart="@+id/startTravel" />
 
         <Spinner
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/driverRoute"
-            android:layout_above="@+id/startTravel"
-            android:layout_centerHorizontal="true"
-            android:spinnerMode="dropdown" />
+            android:spinnerMode="dropdown"
+            android:layout_below="@+id/textView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="72dp" />
     </RelativeLayout>
 </RelativeLayout>
 
