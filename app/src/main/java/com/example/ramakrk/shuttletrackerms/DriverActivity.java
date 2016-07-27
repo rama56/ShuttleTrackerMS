@@ -53,6 +53,7 @@ public class DriverActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(DriverActivity.this,"Starting to track",Toast.LENGTH_LONG).show();
                 SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 //showCurrentLocation();
@@ -71,6 +72,7 @@ public class DriverActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(clientBackendDriver != null) {
+                    Toast.makeText(DriverActivity.this,"Stopped tracking",Toast.LENGTH_LONG).show();
                     clientBackendDriver.StopGivingLocationData();
                 }
             }
