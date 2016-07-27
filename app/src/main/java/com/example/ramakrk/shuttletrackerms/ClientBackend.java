@@ -90,60 +90,30 @@ public class ClientBackend {
 
     // Methods called by passengers waiting for the bus.
     public LocationData GetLocationDataFromDB(final String busRoute) {
+
         return new LocationData(new Coordinate(17.43,78.36),"5", parseDate("2016-07-26-19-01-00"));
-//        final String url = "http://shuttletracker.netau.net/GetPosition.php";
-//
-//        // Create and perform a HTTP request.
-//        JSONObject request = new JSONObject();
-//        GetPosition gp=new GetPosition(busRoute);
-//        try {
-//            gp.execute().get(5000,TimeUnit.MILLISECONDS);
-//        }catch (Exception e){
-//            Log.e("CB",e.getMessage());
-//        }
-//        return CurrentPosition;
+ /*       final String url = "http://shuttletracker.netau.net/GetPosition.php";
+        int retryCount = 5;
+
+        // Create a HTTP request.
+
+        while (retryCount > 0) {
+            // Create and perform a HTTP request.
+            JSONObject request = new JSONObject();
+            GetPosition gp = new GetPosition(busRoute);
+            try {
+                gp.execute().get(5000, TimeUnit.MILLISECONDS);
+                retryCount = 0;
+            } catch (Exception e) {
+                Log.e("CB", e.getMessage());
+                retryCount--;
+            }
+
+        }
+        return CurrentPosition;
+        */
 
 
-//        java.util.List<NameValuePair> requestParams = new ArrayList<NameValuePair>();
-//
-//        requestParams.add(new BasicNameValuePair("RouteNo", busRoute));
-//        requestParams.add(new BasicNameValuePair("BusNo", "busRoute"));
-//
-//        // getting JSON Object
-//        // Note that create product url accepts POST method
-//        JSONObject json = jsonParser.makeHttpRequest(url,
-//                "GET", requestParams);
-//
-//
-//        // check log cat fro response
-//        Log.d("Create Response", json.toString());
-//
-//        // check for success tag
-//        try {
-//            int success = json.getInt(TAG_success);
-//
-//            if (success == 1) {
-//                Log.d("t1", "successfully retrieved");
-//                JSONArray buses = json.getJSONArray("product");
-//                JSONObject bus = buses.getJSONObject(0);
-//
-//                String lastUpdatedTime = bus.getString("LastUpdatedTime");
-//
-//                DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//                Date date = format.parse(lastUpdatedTime);
-//                CurrentPosition.point = new Coordinate(bus.getDouble("LatPos"),bus.getDouble("LongPos"));
-//                CurrentPosition.busRoute =  busRoute;
-//                CurrentPosition.time = date;
-//                // closing this screen
-//                // finish();
-//            } else {
-//                // failed to create product
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        return CurrentPosition;
     }
 
     private Date parseDate(String date)
@@ -168,6 +138,9 @@ public class ClientBackend {
 
                 // Get GPS data.
                 Location location = getCurrentLatLongFromGPS(context);
+//
+//                double dlongitude = location.getLatitude();  //longitude;
+//                double dlatitude = location.getLongitude();  //latitude;
                 if (location == null)
                 {
                     // DriverActivity dv= new DriverActivity();
@@ -226,8 +199,83 @@ public class ClientBackend {
             }
             retryCount--;
         }
+
+
+        /*int retryCount = 5;
+
+        // Create a HTTP request.
+
+        while (retryCount > 0) {
+            // Create and perform a HTTP request.
+           PutPosition putPosition = new PutPosition(location.busRoute,location.point.latitude,location.point.longitude,location.time);
+
+            try {
+                putPosition.execute().get(5000, TimeUnit.MILLISECONDS);
+                retryCount = 0;
+            } catch (Exception e) {
+                Log.e("CB", e.getMessage());
+                retryCount--;
+            }
+
+        }*/
+
+
         return isSuccess;
     }
+
+    public class PutPosition extends AsyncTask<String, String, Void>{
+        String busRoute;
+        String lat;
+        String longitude;
+        String upDateTime;
+
+        public PutPosition(String busRoute, Double lat, Double longitutde, Date updateTime){
+            this.busRoute = busRoute;
+            this.lat = lat.toString();
+            this.longitude = longitutde.toString();
+            this.upDateTime = updateTime.toString();
+
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            final String url = "https://shuttletracker.netau.net/UpdatePosition.php";
+            java.util.List<NameValuePair> requestParams = new ArrayList<NameValuePair>();
+
+            requestParams.add(new BasicNameValuePair("RouteNo", this.busRoute));
+            requestParams.add(new BasicNameValuePair("BusNo", this.busRoute));
+            requestParams.add(new BasicNameValuePair("LatPos", this.lat));
+            requestParams.add(new BasicNameValuePair("LongPos", this.longitude));
+            requestParams.add(new BasicNameValuePair("LastUpdateTime", this.upDateTime));
+
+            // getting JSON Object
+            // Note that create product url accepts POST method
+            JSONObject json = jsonParser.makeHttpRequest(url,
+                    "GET", requestParams);
+
+
+            // check log cat fro response
+            Log.d("Create Response", json.toString());
+            try {
+                int success = json.getInt(TAG_success);
+
+                if (success == 1) {
+                    Log.d("t1", "successfully retrieved");
+                    // closing this screen
+                    // finish();
+                } else {
+                    // failed to create product
+                    String message = json.getString("message");
+                    Log.d("t1", "Update failed with error:"+message);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+
+
 
     public static Date getCurrentLocalTime()
     {
