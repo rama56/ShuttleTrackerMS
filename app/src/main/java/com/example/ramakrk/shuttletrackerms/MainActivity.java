@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 employeeMap = googleMap;
 
                 SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-                String RouteNumber = sharedPreferences.getString("TrackRoute","1");
+                String RouteNumber = sharedPreferences.getString("TrackRoute","10");
                 // Call a function to periodically update the bus location on Map.
                 UpdateBusLocationPeriodically(RouteNumber);
             }
@@ -164,42 +164,44 @@ public class MainActivity extends AppCompatActivity {
             public void onTick(long millisUntilFinished) {
                 ClientBackend object = new ClientBackend();
                 ClientBackend.LocationData currentLocation = object.GetLocationDataFromDB(routeNumber);
-                ClientBackend.Coordinate currentPoint = currentLocation.point;
-                Date registeredTime = currentLocation.time;
-                Date currentTime = ClientBackend.getCurrentLocalTime();
+                if(currentLocation != null) {
+                    ClientBackend.Coordinate currentPoint = currentLocation.point;
+                    Date registeredTime = currentLocation.time;
+                    Date currentTime = ClientBackend.getCurrentLocalTime();
 
 
-                long differenceInSeconds = getDifference(registeredTime, currentTime);
+                    long differenceInSeconds = getDifference(registeredTime, currentTime);
 
-                // Use shared memory to store staleness time of location data.
-                SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
+                    // Use shared memory to store staleness time of location data.
+                    SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                editor.putLong("LocationStaleness", differenceInSeconds);
-                editor.commit();
+                    editor.putLong("LocationStaleness", differenceInSeconds);
+                    editor.commit();
 
-                // Update the pin in the map.
-                BitmapDescriptor bitmap;
+                    // Update the pin in the map.
+                    BitmapDescriptor bitmap;
 
-                if(currentPoint != null)
-                {
-                    LatLng bus = new LatLng(currentPoint.latitude, currentPoint.longitude);
-                    employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.bus)).position(bus).title(routeNumber));
-                    employeeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(bus, 15.0f));
+                    if (currentPoint != null) {
+                        LatLng bus = new LatLng(currentPoint.latitude, currentPoint.longitude);
+                        employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.bus)).position(bus).title(routeNumber));
+                        employeeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(bus, 15.0f));
+                    } else {
+                        Toast.makeText(MainActivity.this, "Server didn't return location for bus route " + routeNumber, Toast.LENGTH_SHORT).show();
+                    }
+
+                    Location user = ClientBackend.getCurrentLatLongFromGPS(getBaseContext());
+                    if (user != null) {
+                        LatLng myLocation = new LatLng(user.getLatitude(), user.getLongitude());
+                        employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)).position(myLocation).title("You are here..."));
+                    } else {
+                        Log.d("0,0", "GPS VALUE IS NULL");
+                        Toast.makeText(MainActivity.this, " Your location is unavailable. Turn on GPS or Check network connection", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else
                 {
-                    Toast.makeText(MainActivity.this, "Server didn't return location for bus route " + routeNumber, Toast.LENGTH_SHORT).show();
-                }
-
-                Location user = ClientBackend.getCurrentLatLongFromGPS(getBaseContext());
-                if (user != null) {
-                    LatLng myLocation = new LatLng(user.getLatitude(), user.getLongitude());
-                    employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)).position(myLocation).title("You are here..."));
-                } else
-                {
-                    Log.d("0,0", "GPS VALUE IS NULL");
-                    Toast.makeText(MainActivity.this, " Your location is unavailable. Turn on GPS or Check network connection", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Server didn't return locationData object.", Toast.LENGTH_SHORT).show();
                 }
             }
 

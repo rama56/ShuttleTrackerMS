@@ -61,7 +61,6 @@ public class JSONParser {
 			}else if(method == "GET"){
 				// request method is GET
 				DefaultHttpClient httpClient = new DefaultHttpClient();
-				httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 				String paramString = URLEncodedUtils.format(params, "utf-8");
 				url += "?" + paramString;
 				HttpGet httpGet = new HttpGet(url);
