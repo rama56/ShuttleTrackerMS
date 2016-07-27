@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class MainPageActivity extends AppCompatActivity {
 
@@ -16,6 +19,11 @@ public class MainPageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
+
+        TextView text = (TextView)findViewById(R.id.title);
+        Animation animation1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blink);
+        text.startAnimation(animation1);
+
         passengerButton = (Button) findViewById(R.id.navigatePassenger);
         driverButton = (Button) findViewById(R.id.navigateDriver);
         routeButton = (Button) findViewById(R.id.routeTrack);

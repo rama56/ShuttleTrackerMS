@@ -8,6 +8,7 @@ import android.os.CountDownTimer;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
@@ -16,6 +17,7 @@ import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 //import com.google.android.gms.drive.internal.StringListResponse;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -34,8 +36,9 @@ public class MainActivity extends AppCompatActivity {
 
     private GoogleMap employeeMap;
     private Button trackShuttle;
-
+    public boolean Locationnotset = false;
     private CountDownTimer timerToDisplayStaleness = null;
+
 
     private void getRouteNumber() {
         AlertDialog routeDialog = new AlertDialog.Builder(MainActivity.this).create();
@@ -91,6 +94,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+//        if(Locationnotset)
+//        {
+//            Toast.makeText(MainActivity.this,"GPS turned Off",)
+//        }
 
 
 
@@ -154,13 +161,13 @@ public class MainActivity extends AppCompatActivity {
         timerToGetData = new CountDownTimer(100000,1000)
         {
             @Override
-            public void onTick(long millisUntilFinished)
-            {
-                ClientBackend object = new ClientBackend();
+            public void onTick(long millisUntilFinished) {
+                ClientBackend object = new ClientBackend(MainActivity.this);
                 ClientBackend.LocationData currentLocation = object.GetLocationDataFromDB(routeNumber);
                 ClientBackend.Coordinate currentPoint = currentLocation.point;
                 Date registeredTime = currentLocation.time;
                 Date currentTime = ClientBackend.getCurrentLocalTime();
+
 
                 long differenceInSeconds = getDifference(registeredTime, currentTime);
 
@@ -168,18 +175,28 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                editor.putLong("LocationStaleness",differenceInSeconds);
+                editor.putLong("LocationStaleness", differenceInSeconds);
                 editor.commit();
 
                 // Update the pin in the map.
-                LatLng bus = new LatLng(currentPoint.latitude, currentPoint.longitude);
-                Location user = ClientBackend.getCurrentLatLongFromGPS(getBaseContext());
-                LatLng myLocation = new LatLng(user.getLatitude(), user.getLongitude());
                 BitmapDescriptor bitmap;
+
+                LatLng bus = new LatLng(currentPoint.latitude, currentPoint.longitude);
                 employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.bus)).position(bus).title(routeNumber));
-                employeeMap.addMarker(new MarkerOptions().position(myLocation).title("You are here..."));
-                employeeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(bus,15.0f));
+                employeeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(bus, 15.0f));
+
+                Location user = ClientBackend.getCurrentLatLongFromGPS(getBaseContext());
+                if (user != null) {
+                    LatLng myLocation = new LatLng(user.getLatitude(), user.getLongitude());
+                    employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)).position(myLocation).title("You are here..."));
+                } else
+                {
+                    Log.d("0,0", "GPS VALUE IS NULL");
+                    //Locationnotset = true;
+                    //Toast.makeText(MainActivity.this, " Your location is unavailable. Turn on GPS or Check network connection", Toast.LENGTH_SHORT).show();
+                }
             }
+
 
             @Override
             public void onFinish()
@@ -189,15 +206,23 @@ public class MainActivity extends AppCompatActivity {
         };
         timerToGetData.start();
 
+
     }
 
     private long getDifference(Date early, Date late)
     {
-        long gapInSeconds = 250;
+        long gapInSeconds = -1;
         if(late!=null && early!=null) {
             gapInSeconds = (late.getTime() - early.getTime()) / 1000;
         }
         return gapInSeconds;
     }
-
+    @Override
+    public void onBackPressed()
+    {
+        // code here to show dialog
+        super.onBackPressed();  // optional depending on your needs
+        Intent intent = new Intent(MainActivity.this,MainPageActivity.class);
+        startActivity(intent);
+    }
 }
