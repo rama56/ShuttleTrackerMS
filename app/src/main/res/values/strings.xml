@@ -3,6 +3,7 @@
     <string name="track">Track</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_driver">DriverActivity</string>
+    <string name="where_apos_s_my_bus">Where\'s my bus??</string>
     <string-array name="route_number">
         <item>1</item>
         <item>2</item>

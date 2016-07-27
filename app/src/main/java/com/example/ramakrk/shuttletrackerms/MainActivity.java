@@ -158,11 +158,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void UpdateBusLocationPeriodically(final String routeNumber)
     {
-        timerToGetData = new CountDownTimer(100000,1000)
+        timerToGetData = new CountDownTimer(100000,10000)
         {
             @Override
             public void onTick(long millisUntilFinished) {
-                ClientBackend object = new ClientBackend(MainActivity.this);
+                ClientBackend object = new ClientBackend();
                 ClientBackend.LocationData currentLocation = object.GetLocationDataFromDB(routeNumber);
                 ClientBackend.Coordinate currentPoint = currentLocation.point;
                 Date registeredTime = currentLocation.time;
@@ -181,9 +181,16 @@ public class MainActivity extends AppCompatActivity {
                 // Update the pin in the map.
                 BitmapDescriptor bitmap;
 
-                LatLng bus = new LatLng(currentPoint.latitude, currentPoint.longitude);
-                employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.bus)).position(bus).title(routeNumber));
-                employeeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(bus, 15.0f));
+                if(currentPoint != null)
+                {
+                    LatLng bus = new LatLng(currentPoint.latitude, currentPoint.longitude);
+                    employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.bus)).position(bus).title(routeNumber));
+                    employeeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(bus, 15.0f));
+                }
+                else
+                {
+                    Toast.makeText(MainActivity.this, "Server didn't return location for bus route " + routeNumber, Toast.LENGTH_SHORT).show();
+                }
 
                 Location user = ClientBackend.getCurrentLatLongFromGPS(getBaseContext());
                 if (user != null) {
@@ -192,8 +199,7 @@ public class MainActivity extends AppCompatActivity {
                 } else
                 {
                     Log.d("0,0", "GPS VALUE IS NULL");
-                    //Locationnotset = true;
-                    //Toast.makeText(MainActivity.this, " Your location is unavailable. Turn on GPS or Check network connection", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, " Your location is unavailable. Turn on GPS or Check network connection", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -220,8 +226,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed()
     {
-        // code here to show dialog
-        super.onBackPressed();  // optional depending on your needs
+        super.onBackPressed();
         Intent intent = new Intent(MainActivity.this,MainPageActivity.class);
         startActivity(intent);
     }

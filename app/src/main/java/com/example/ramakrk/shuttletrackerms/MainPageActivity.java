@@ -21,8 +21,11 @@ public class MainPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_page);
 
         TextView text = (TextView)findViewById(R.id.title);
-        Animation animation1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blink);
+        Animation animation1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.bottomup);
         text.startAnimation(animation1);
+        TextView text1 = (TextView)findViewById(R.id.choosemode);
+        Animation animation2 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blink);
+        text1.startAnimation(animation2);
 
         passengerButton = (Button) findViewById(R.id.navigatePassenger);
         driverButton = (Button) findViewById(R.id.navigateDriver);
