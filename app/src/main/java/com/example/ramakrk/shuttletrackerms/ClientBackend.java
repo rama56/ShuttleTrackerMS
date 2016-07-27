@@ -20,12 +20,10 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.sql.Driver;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -84,14 +82,14 @@ public class ClientBackend {
         double longitude;
     }
 
-    public static LocationData CurrentPosition;
+    public static LocationData currentPosition;
 
 
     // Methods called by passengers waiting for the bus.
     public LocationData GetLocationDataFromDB(final String busRoute) {
 
-        return new LocationData(new Coordinate(17.43,78.36),"5", parseDate("2016-07-26-19-01-00"));
- /*       final String url = "http://shuttletracker.netau.net/GetPosition.php";
+    //    return new LocationData(new Coordinate(17.43,78.36),"5", parseDate("2016-07-26-19-01-00"));
+        final String url = "https://msshuttletracker.herokuapp.com/GetPosition.php";
         int retryCount = 5;
 
         // Create a HTTP request.
@@ -101,7 +99,7 @@ public class ClientBackend {
             JSONObject request = new JSONObject();
             GetPosition gp = new GetPosition(busRoute);
             try {
-                gp.execute().get(5000, TimeUnit.MILLISECONDS);
+                gp.execute().get();
                 retryCount = 0;
             } catch (Exception e) {
                 Log.e("CB", e.getMessage());
@@ -109,8 +107,7 @@ public class ClientBackend {
             }
 
         }
-        return CurrentPosition;
-        */
+        return currentPosition;
 
 
     }
@@ -131,7 +128,7 @@ public class ClientBackend {
     // Methods called by bus driver.
     public void GiveLocationDataToDBWrapper(final Context context, final String busRoute) throws SecurityException
     {
-        timerForSendingLocationData = new CountDownTimer(10000, 1000)
+        timerForSendingLocationData = new CountDownTimer(100000, 000)
         {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -139,16 +136,16 @@ public class ClientBackend {
 
                 // Get GPS data.
                 Location location = getCurrentLatLongFromGPS(context);
-//
-//                double dlongitude = location.getLatitude();  //longitude;
-//                double dlatitude = location.getLongitude();  //latitude;
+                if(location == null) {
+                    location = new Location("dummy");
+                    location.setLatitude(20.5);
+                    location.setLongitude(15.9);
+                }
+
                 if (location == null)
                 {
-
                     Log.d("0,0", millisUntilFinished + "GPS VALUE IS NULL");
                     //Checkforconnection(context);
-
-
                 }
                 else
                 {
@@ -170,7 +167,7 @@ public class ClientBackend {
 
             @Override
             public void onFinish() {
-              //  timerForSendingLocationData.start();
+                timerForSendingLocationData.start();
             }
         }.start();
     }
@@ -185,45 +182,22 @@ public class ClientBackend {
     {
         boolean isSuccess = false;
         int retryCount = 5;
-
-        // Create a HTTP request.
-
-
-        while(retryCount > 0)
-        {
-            //Perform the HTTP request.
-
-            if(1==1 /* HTTP request succeeds*/)
-            {
-                isSuccess = true;
-            }
-            retryCount--;
-        }
-
-
-        /*int retryCount = 5;
-
-        // Create a HTTP request.
-
         while (retryCount > 0) {
             // Create and perform a HTTP request.
            PutPosition putPosition = new PutPosition(location.busRoute,location.point.latitude,location.point.longitude,location.time);
 
             try {
-                putPosition.execute().get(5000, TimeUnit.MILLISECONDS);
+                putPosition.execute().get();
                 retryCount = 0;
             } catch (Exception e) {
                 Log.e("CB", e.getMessage());
                 retryCount--;
             }
-
-        }*/
-
-
+        }
         return isSuccess;
     }
 
-    public class PutPosition extends AsyncTask<String, String, Void>{
+    class PutPosition extends AsyncTask<String, String, Void>{
         String busRoute;
         String lat;
         String longitude;
@@ -239,7 +213,7 @@ public class ClientBackend {
 
         @Override
         protected Void doInBackground(String... params) {
-            final String url = "https://shuttletracker.netau.net/UpdatePosition.php";
+            final String url = "https://msshuttletracker.herokuapp.com/UpdatePosition.php";
             java.util.List<NameValuePair> requestParams = new ArrayList<NameValuePair>();
 
             requestParams.add(new BasicNameValuePair("RouteNo", this.busRoute));
@@ -256,19 +230,22 @@ public class ClientBackend {
 
             // check log cat fro response
             Log.d("Create Response", json.toString());
-            try {
+            try
+            {
                 int success = json.getInt(TAG_success);
-
-                if (success == 1) {
+                if (success == 1)
+                {
                     Log.d("t1", "successfully retrieved");
-                    // closing this screen
-                    // finish();
-                } else {
+                }
+                else
+                {
                     // failed to create product
                     String message = json.getString("message");
                     Log.d("t1", "Update failed with error:"+message);
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 e.printStackTrace();
             }
             return null;
@@ -296,7 +273,7 @@ public class ClientBackend {
     {
         LocationData returnable;
         String busRoute;
-        final String url = "https://shuttletracker.netau.net/GetPosition.php";
+        final String url = "https://msshuttletracker.herokuapp.com/GetPosition.php";
 
         GetPosition(String busRoute)
         {
@@ -329,16 +306,19 @@ public class ClientBackend {
 
                 if (success == 1) {
                     Log.d("t1", "successfully retrieved");
-                    JSONArray buses = json.getJSONArray("product");
+                    JSONArray buses = json.getJSONArray("BusInfo");
                     JSONObject bus = buses.getJSONObject(0);
 
                     String lastUpdatedTime = bus.getString("LastUpdatedTime");
 
                     DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date = format.parse(lastUpdatedTime);
-                    CurrentPosition.point = new Coordinate(bus.getDouble("LatPos"),bus.getDouble("LongPos"));
-                    CurrentPosition.busRoute =  busRoute;
-                    CurrentPosition.time = date;
+
+                    currentPosition = new LocationData(new Coordinate(bus.getDouble("LatPos"),bus.getDouble("LongPos")), bus.getString("BusNo"), date);
+
+//                    currentPosition.point = new Coordinate(bus.getDouble("LatPos"),bus.getDouble("LongPos"));
+//                    currentPosition.busRoute = "10";
+//                    currentPosition.time = date;
                     // closing this screen
                     // finish();
                 } else {
