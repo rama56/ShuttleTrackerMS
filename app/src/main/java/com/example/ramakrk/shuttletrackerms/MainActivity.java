@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
@@ -168,21 +169,32 @@ public class MainActivity extends AppCompatActivity {
 
     CountDownTimer timerToGetData = null;
 
+    static int[] timeIntervals = {1,2,1,4,3,1,2,1,3,1,4,1,2,4,1,2,3,1,2,1};
+
     private void UpdateBusLocationPeriodically(final String routeNumber)
     {
         timerToGetData = new CountDownTimer(100000,10000)
         {
+            int counter = 0;
             @Override
             public void onTick(long millisUntilFinished) {
                 ClientBackend object = new ClientBackend();
-                ClientBackend.LocationData currentLocation = object.GetLocationDataFromDB(routeNumber);
-                if(currentLocation != null)
-                {
+                ClientBackend.LocationData currentLocation = object.GetLocationDataFromDBMimic(routeNumber);
+                if(currentLocation != null) {
                     ClientBackend.Coordinate currentPoint = currentLocation.point;
-                    Date registeredTime = currentLocation.time;
+                   // Date registeredTime = currentLocation.time;
                     Date currentTime = ClientBackend.getCurrentLocalTime();
 
-                    long differenceInSeconds = getDifference(registeredTime, currentTime);
+
+                    Calendar tmp = Calendar.getInstance();
+                    tmp.add(Calendar.SECOND, timeIntervals[counter]);
+                    counter++;
+
+                    Date registeredTime = tmp.getTime();
+
+                   // long differenceInSeconds = getDifference(registeredTime, currentTime);
+
+                    long differenceInSeconds = getDifference(currentTime, registeredTime);
 
                     // Use shared memory to store staleness time of location data.
                     SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
@@ -195,9 +207,10 @@ public class MainActivity extends AppCompatActivity {
                     BitmapDescriptor bitmap;
 
                     if (currentPoint != null) {
+                        employeeMap.clear();
                         LatLng bus = new LatLng(currentPoint.latitude, currentPoint.longitude);
                         employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.bus)).position(bus).title(routeNumber));
-                        //employeeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(bus, 15.0f));
+                        employeeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(bus, 15.0f));
                     } else {
                         Toast.makeText(MainActivity.this, "Server didn't return location for bus route " + routeNumber, Toast.LENGTH_SHORT).show();
                     }
@@ -225,7 +238,6 @@ public class MainActivity extends AppCompatActivity {
             public void onFinish()
             {
                 timerToGetData.start();
-
             }
         };
         timerToGetData.start();
