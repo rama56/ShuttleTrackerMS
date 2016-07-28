@@ -1,6 +1,10 @@
 package com.example.ramakrk.shuttletrackerms;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -35,9 +39,19 @@ public class MainPageActivity extends AppCompatActivity {
         passengerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainPageActivity.this,"Tracking shuttle...",Toast.LENGTH_LONG).show();
-                Intent passengerIntent = new Intent(v.getContext(),MainActivity.class);
-                startActivityForResult(passengerIntent,0);
+                if(isNetworkConnected())
+                {
+                    Toast.makeText(MainPageActivity.this,"Tracking shuttle...",Toast.LENGTH_LONG).show();
+                    Intent passengerIntent = new Intent(v.getContext(),MainActivity.class);
+                    startActivityForResult(passengerIntent,0);
+
+                }
+                else
+                {
+                    //Toast.makeText(MainPageActivity.this,"Check your internet connection",Toast.LENGTH_LONG).show();
+                    showAlertDialog();
+                }
+
 
             }
         });
@@ -45,12 +59,38 @@ public class MainPageActivity extends AppCompatActivity {
         driverButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainPageActivity.this,"Broadcasting Location...",Toast.LENGTH_LONG).show();
-                Intent driverIntent = new Intent(v.getContext(),DriverActivity.class);
-                startActivityForResult(driverIntent,0);
+                if(isNetworkConnected()) {
+                    Toast.makeText(MainPageActivity.this, "Broadcasting Location...", Toast.LENGTH_LONG).show();
+                    Intent driverIntent = new Intent(v.getContext(), DriverActivity.class);
+                    startActivityForResult(driverIntent, 0);
+                }
+                else
+                {
+                    //Toast.makeText(MainPageActivity.this,"Check your internet connection",Toast.LENGTH_LONG).show();
+                    showAlertDialog();
+                }
+
             }
         });
 
         
+    }
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null;
+    }
+    private void showAlertDialog() {
+        AlertDialog alertDialog = new AlertDialog.Builder(MainPageActivity.this).create(); //Use context
+        alertDialog.setTitle("Error");
+        alertDialog.setMessage("No Network Connection");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 }
