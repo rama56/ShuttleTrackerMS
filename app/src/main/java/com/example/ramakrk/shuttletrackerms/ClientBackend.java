@@ -53,10 +53,6 @@ public class ClientBackend {
 
     }
 
-//    public static void showToastMethod() {
-//        Toast.makeText(contextOfInstantiator, "Turn on GPS or Check network connection", Toast.LENGTH_SHORT).show();
-//    }
-
     private CountDownTimer timerForSendingLocationData;
 
     public static class LocationData {
@@ -88,7 +84,7 @@ public class ClientBackend {
     // Methods called by passengers waiting for the bus.
     public LocationData GetLocationDataFromDB(final String busRoute) {
 
-    //    return new LocationData(new Coordinate(17.43,78.36),"5", parseDate("2016-07-26-19-01-00"));
+        //return new LocationData(new Coordinate(17.43,78.36),"5", parseDate("2016-07-27-19-01-00"));
         final String url = "https://msshuttletracker.herokuapp.com/GetPosition.php";
         int retryCount = 5;
 
@@ -108,8 +104,6 @@ public class ClientBackend {
 
         }
         return currentPosition;
-
-
     }
 
     public static Date parseDate(String date)

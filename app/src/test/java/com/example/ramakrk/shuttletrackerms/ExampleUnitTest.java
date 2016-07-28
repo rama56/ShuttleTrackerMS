@@ -42,7 +42,5 @@ public class ExampleUnitTest {
         ClientBackend.Coordinate point = new ClientBackend.Coordinate(20.5,14.7);
         ClientBackend.LocationData location = new ClientBackend.LocationData(point,"15",date);
         boolean isSuccess = obj.GiveLocationDataToDB(location);
-        
-
     }
 }
