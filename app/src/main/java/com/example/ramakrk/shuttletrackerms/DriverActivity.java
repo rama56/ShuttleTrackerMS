@@ -101,6 +101,9 @@ public class DriverActivity extends AppCompatActivity {
     {
         super.onBackPressed();
         Intent intent = new Intent(DriverActivity.this,MainPageActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK); // clears all previous activities task
+        finish();
         startActivity(intent);
     }
 

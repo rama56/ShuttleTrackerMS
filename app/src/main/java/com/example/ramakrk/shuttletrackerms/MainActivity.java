@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private Button trackShuttle;
     public boolean Locationnotset = false;
     private CountDownTimer timerToDisplayStaleness = null;
+    Toast mytoast;
 
 
     private void getRouteNumber() {
@@ -51,10 +52,19 @@ public class MainActivity extends AppCompatActivity {
         final Spinner spinner = new Spinner(this);
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,availRoutes);
         spinner.setAdapter(spinnerAdapter);
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        String getRoute = sharedPreferences.getString("TrackRoute", "1");
+        if(Integer.parseInt(getRoute)-1  != 0) {
+            spinner.setSelection(Integer.parseInt(getRoute) - 1);
+        }
         routeDialog.setView(spinner);
         routeDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "TRACK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        // Because we may select a new bus route, we cancel the 'Last Updated' timer of the previous root.
+                        if(timerToDisplayStaleness!=null) {
+                            timerToDisplayStaleness.cancel();
+                        }
                         SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
 
@@ -90,37 +100,37 @@ public class MainActivity extends AppCompatActivity {
                 employeeMap = googleMap;
 
                 SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-                String RouteNumber = sharedPreferences.getString("TrackRoute","10");
+                String RouteNumber = sharedPreferences.getString("TrackRoute","-1");
+
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                editor.putLong("LocationStaleness", -1);
+                editor.commit();
+
                 // Call a function to periodically update the bus location on Map.
                 UpdateBusLocationPeriodically(RouteNumber);
             }
 
         });
-//        if(Locationnotset)
-//        {
-//            Toast.makeText(MainActivity.this,"GPS turned Off",)
-//        }
-
-
-
-        // Testing here by Rama. Don't erase for now.
-        //ClientBackend obj = new ClientBackend();
-        //obj.GiveLocationDataToDBWrapper(getBaseContext(), "24");
-        // Testing ends.
 
         trackShuttle.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 getRouteNumber();
+                //timerToGetData.cancel();
             }
         });
 
+        if(timerToDisplayStaleness!=null)
+        {
+            timerToDisplayStaleness.cancel();
+        }
         UpdateLocationStalenessPeriodically(1000);
     }
 
     private void UpdateLocationStalenessPeriodically(int i)
     {
-        timerToDisplayStaleness = new CountDownTimer(10000000, i) {
+        timerToDisplayStaleness = new CountDownTimer(10000, i) {
             @Override
             public void onTick(long millisUntilFinished) {
                 SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
@@ -166,11 +176,11 @@ public class MainActivity extends AppCompatActivity {
             public void onTick(long millisUntilFinished) {
                 ClientBackend object = new ClientBackend();
                 ClientBackend.LocationData currentLocation = object.GetLocationDataFromDB(routeNumber);
-                if(currentLocation != null) {
+                if(currentLocation != null)
+                {
                     ClientBackend.Coordinate currentPoint = currentLocation.point;
                     Date registeredTime = currentLocation.time;
                     Date currentTime = ClientBackend.getCurrentLocalTime();
-
 
                     long differenceInSeconds = getDifference(registeredTime, currentTime);
 
@@ -187,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
                     if (currentPoint != null) {
                         LatLng bus = new LatLng(currentPoint.latitude, currentPoint.longitude);
                         employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.bus)).position(bus).title(routeNumber));
-                        employeeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(bus, 15.0f));
+                        //employeeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(bus, 15.0f));
                     } else {
                         Toast.makeText(MainActivity.this, "Server didn't return location for bus route " + routeNumber, Toast.LENGTH_SHORT).show();
                     }
@@ -198,13 +208,16 @@ public class MainActivity extends AppCompatActivity {
                         employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)).position(myLocation).title("You are here..."));
                     } else {
                         Log.d("0,0", "GPS VALUE IS NULL");
-                        Toast.makeText(MainActivity.this, " Your location is unavailable. Turn on GPS or Check network connection", Toast.LENGTH_SHORT).show();
+                        /*mytoast=new Toast(MainActivity.this);
+                        mytoast=Toast.makeText(MainActivity.this, " Your location is unavailable. Turn on GPS or Check network connection", Toast.LENGTH_SHORT);
+                        mytoast.show();*/
                     }
                 }
                 else
                 {
-                    Toast.makeText(MainActivity.this, "Server didn't return locationData object.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Server didn't return locationData object " + routeNumber, Toast.LENGTH_SHORT).show();
                 }
+
             }
 
 
@@ -212,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
             public void onFinish()
             {
                 timerToGetData.start();
+
             }
         };
         timerToGetData.start();
@@ -232,7 +246,33 @@ public class MainActivity extends AppCompatActivity {
     {
         super.onBackPressed();
         Intent intent = new Intent(MainActivity.this,MainPageActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK); // clears all previous activities task
+         // destroy current activity..
+        timerToGetData.cancel();
+        timerToGetData=null;
+        if(mytoast!=null) {
+            mytoast.cancel();
+        }
+        finish();
         startActivity(intent);
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+    if(mytoast!=null) {
+        mytoast.cancel();
+    }
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStop () {
+        super.onStop();
+        if(mytoast!=null) {
+            mytoast.cancel();
+        }
     }
 
 }
