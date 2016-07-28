@@ -38,7 +38,7 @@ public class ClientBackend {
 
     private static Context contextOfInstantiator;
 
-    static Double latPosition[]= {
+    static Double         latPosition[]= {
             17.429809,
             17.430382,
             17.430761,
@@ -412,7 +412,11 @@ public class ClientBackend {
 
     public static Location getCurrentLatLongFromGPS(Context context)
     {
-        LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        Location fake = new Location("dummy");
+        fake.setLatitude(17.428499);
+        fake.setLongitude(78.341483);
+        return fake;
+        /*LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         Location location = null;
         try {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
@@ -426,8 +430,9 @@ public class ClientBackend {
         {
             Log.e("ClientBackend","Exception" + e);
         }
-        return location;
+        return location;*/
     }
+
     private void Checkforconnection(Context connectioncontext) {
         Location location = ClientBackend.getCurrentLatLongFromGPS(connectioncontext);
         if(location==null)

@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         initialSetup();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -129,13 +130,18 @@ public class MainActivity extends AppCompatActivity {
         UpdateLocationStalenessPeriodically(1000);
     }
 
-    private void UpdateLocationStalenessPeriodically(int i)
+    private void UpdateLocationStalenessPeriodically(final int i)
     {
         timerToDisplayStaleness = new CountDownTimer(10000, i) {
             @Override
             public void onTick(long millisUntilFinished) {
                 SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
                 Long locationStaleness = sharedPreferences.getLong("LocationStaleness",-1);
+
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                editor.putLong("LocationStaleness", locationStaleness + i/1000);
+                editor.commit();
 
                 String stalenessString;
                 if(locationStaleness < 0)
@@ -152,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                     long sec = diff % 60;
                     long min = (diff / 60) % 60;
                     long hr = diff / (60 * 60);
-                    stalenessString =   String.format("Updated %1$02d:%2$02d:%3$02d ago..",hr,min,sec);
+                    stalenessString =   String.format("Location as of %1$02d:%2$02d:%3$02d ago..",hr,min,sec);
                 }
 
                 TextView object  = (TextView)findViewById(R.id.timeChange);
@@ -173,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void UpdateBusLocationPeriodically(final String routeNumber)
     {
-        timerToGetData = new CountDownTimer(100000,10000)
+        timerToGetData = new CountDownTimer(100000,5000)
         {
             int counter = 0;
             @Override
