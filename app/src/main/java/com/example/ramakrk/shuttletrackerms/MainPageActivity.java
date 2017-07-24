@@ -42,17 +42,14 @@ public class MainPageActivity extends AppCompatActivity {
                 if(isNetworkConnected())
                 {
                     Toast.makeText(MainPageActivity.this,"Tracking shuttle...",Toast.LENGTH_LONG).show();
-                    Intent passengerIntent = new Intent(v.getContext(),MainActivity.class);
+                    Intent passengerIntent = new Intent(v.getContext(),PassengerActivity.class);
                     startActivityForResult(passengerIntent,0);
-
                 }
                 else
                 {
                     //Toast.makeText(MainPageActivity.this,"Check your internet connection",Toast.LENGTH_LONG).show();
                     showAlertDialog();
                 }
-
-
             }
         });
 

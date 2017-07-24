@@ -38,7 +38,76 @@ public class ClientBackend {
 
     private static Context contextOfInstantiator;
 
+    static Double         latPosition[]= {
+            17.429809,
+            17.430382,
+            17.430761,
+            17.431222,
+            17.431744,
+            17.432425,
+            17.432967,
+            17.433356,
+            17.433745,
+            17.434180,
+            17.434497,
+            17.434871,
+            17.435147,
+            17.435449,
+            17.435638,
+            17.435853,
+            17.436047,
+            17.436285,
+            17.436515,
+            17.436689
+    };
+    static Double longPosition[]={
+            78.343194,
+            78.343419,
+            78.343623,
+            78.343945,
+            78.344267,
+            78.344777,
+            78.345174,
+            78.345319,
+            78.345560,
+            78.345801,
+            78.345967,
+            78.346219,
+            78.346428,
+            78.346600,
+            78.346723,
+            78.346852,
+            78.346943,
+            78.347072,
+            78.347198,
+            78.347292
+    };
 
+//    static String[] timeList = {
+//            "2016-07-26-19-01-00",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//
+//    }
 
     JSONParser jsonParser = new JSONParser();
     final String TAG_success = "success";
@@ -79,13 +148,13 @@ public class ClientBackend {
     }
 
     public static LocationData currentPosition;
-
+    public static int busCurrentLocation = longPosition.length;
 
     // Methods called by passengers waiting for the bus.
-    public LocationData GetLocationDataFromDB(final String busRoute) {
-
-        //return new LocationData(new Coordinate(17.43,78.36),"5", parseDate("2016-07-27-19-01-00"));
-        final String url = "https://msshuttletracker.herokuapp.com/GetPosition.php";
+    public LocationData GetLocationDataFromDB(final String busRoute)
+    {
+        return new LocationData(new Coordinate(17.43,78.36),"5", parseDate("2016-07-26-19-01-00"));
+       /* final String url = "https://msshuttletracker.herokuapp.com/GetPosition.php";
         int retryCount = 5;
 
         // Create a HTTP request.
@@ -103,7 +172,18 @@ public class ClientBackend {
             }
 
         }
-        return currentPosition;
+        return currentPosition;*/
+    }
+
+    public LocationData GetLocationDataFromDBMimic(final String busRoute)
+    {
+
+        while(busCurrentLocation > 0){
+            busCurrentLocation--;
+            return new LocationData(new Coordinate(latPosition[busCurrentLocation], longPosition[busCurrentLocation]),"5",new Date());
+        }
+
+        return null;
     }
 
     public static Date parseDate(String date)
@@ -332,7 +412,11 @@ public class ClientBackend {
 
     public static Location getCurrentLatLongFromGPS(Context context)
     {
-        LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        Location fake = new Location("dummy");
+        fake.setLatitude(17.428499);
+        fake.setLongitude(78.341483);
+        return fake;
+        /*LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         Location location = null;
         try {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
@@ -346,8 +430,9 @@ public class ClientBackend {
         {
             Log.e("ClientBackend","Exception" + e);
         }
-        return location;
+        return location;*/
     }
+
     private void Checkforconnection(Context connectioncontext) {
         Location location = ClientBackend.getCurrentLatLongFromGPS(connectioncontext);
         if(location==null)
