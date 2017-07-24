@@ -1,11 +1,9 @@
 package com.example.ramakrk.shuttletrackerms;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
-import android.net.ConnectivityManager;
 import android.os.CountDownTimer;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +14,6 @@ import android.widget.Button;
 
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,7 +21,6 @@ import android.widget.Toast;
 //import com.google.android.gms.drive.internal.StringListResponse;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -35,7 +31,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.Calendar;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity {
+public class PassengerActivity extends AppCompatActivity {
 
     private GoogleMap employeeMap;
     private Button trackShuttle;
@@ -43,9 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private CountDownTimer timerToDisplayStaleness = null;
     Toast mytoast;
 
-
     private void getRouteNumber() {
-        AlertDialog routeDialog = new AlertDialog.Builder(MainActivity.this).create();
+        AlertDialog routeDialog = new AlertDialog.Builder(PassengerActivity.this).create();
         routeDialog.setTitle("Set Route Number");
         String[] availRoutes = {"1","2","3","4","5","6","7","8","9","10",
                                 "11","12","13","14","15","16","17","18","19","20","21","22","23","24"};
@@ -72,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                         editor.putString("TrackRoute",spinner.getSelectedItem().toString());
                         editor.commit();
                         dialog.dismiss();
-                        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                        Intent intent = new Intent(getApplicationContext(),PassengerActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                         startActivityForResult(intent,0);
                     }
@@ -170,7 +165,6 @@ public class MainActivity extends AppCompatActivity {
                 timerToDisplayStaleness.start();
             }
         }.start();
-
     }
 
     CountDownTimer timerToGetData = null;
@@ -218,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
                         employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.bus)).position(bus).title(routeNumber));
                         employeeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(bus, 15.0f));
                     } else {
-                        Toast.makeText(MainActivity.this, "Server didn't return location for bus route " + routeNumber, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PassengerActivity.this, "Server didn't return location for bus route " + routeNumber, Toast.LENGTH_SHORT).show();
                     }
 
                     Location user = ClientBackend.getCurrentLatLongFromGPS(getBaseContext());
@@ -227,14 +221,14 @@ public class MainActivity extends AppCompatActivity {
                         employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)).position(myLocation).title("You are here..."));
                     } else {
                         Log.d("0,0", "GPS VALUE IS NULL");
-                        /*mytoast=new Toast(MainActivity.this);
-                        mytoast=Toast.makeText(MainActivity.this, " Your location is unavailable. Turn on GPS or Check network connection", Toast.LENGTH_SHORT);
+                        /*mytoast=new Toast(PassengerActivity.this);
+                        mytoast=Toast.makeText(PassengerActivity.this, " Your location is unavailable. Turn on GPS or Check network connection", Toast.LENGTH_SHORT);
                         mytoast.show();*/
                     }
                 }
                 else
                 {
-                    Toast.makeText(MainActivity.this, "Server didn't return locationData object " + routeNumber, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PassengerActivity.this, "Server didn't return locationData object " + routeNumber, Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -263,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed()
     {
         super.onBackPressed();
-        Intent intent = new Intent(MainActivity.this,MainPageActivity.class);
+        Intent intent = new Intent(PassengerActivity.this,MainPageActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK); // clears all previous activities task
          // destroy current activity..
