@@ -1,60 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.ramakrk.shuttletrackerms.DriverActivity">
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                tools:context="views.DriverActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:background="@color/abc_search_url_text_normal">
 
         <TextView
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select Route Number"
-            android:id="@+id/textView"
-            android:textSize="@dimen/abc_text_size_headline_material"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="88dp"
-            android:textIsSelectable="false" />
+            android:text="Select Route Number"
+            android:textIsSelectable="false"
+            android:textSize="@dimen/abc_text_size_headline_material"/>
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="START"
             android:id="@+id/startTravel"
-            android:layout_marginTop="59dp"
-            android:layout_below="@+id/driverRoute"
-            android:layout_centerHorizontal="true" />
-
-        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="END"
+            android:layout_below="@+id/driverRoute"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="59dp"
+            android:text="START"/>
+
+        <Button
             android:id="@+id/endTravel"
-            android:layout_alignParentBottom="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/startTravel"
-            android:layout_alignStart="@+id/startTravel" />
+            android:layout_alignParentBottom="true"
+            android:layout_alignStart="@+id/startTravel"
+            android:text="END"/>
 
         <Spinner
+            android:id="@+id/driverRoute"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/driverRoute"
-            android:spinnerMode="dropdown"
-            android:layout_below="@+id/textView"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="72dp" />
+            android:layout_below="@+id/textView"
+            android:layout_marginTop="72dp"
+            android:spinnerMode="dropdown"/>
     </RelativeLayout>
 </RelativeLayout>
 

@@ -8,6 +8,8 @@ import java.util.Date;
 
 import static org.junit.Assert.*;
 
+
+import models.*;
 /**
  * To work on unit tests, switch the Test Artifact in the Build Variants view.
  */
@@ -28,8 +30,8 @@ public class ExampleUnitTest {
     public void TestGetHttpRequest()
     {
         ClientBackend obj = new ClientBackend();
-        ClientBackend.LocationData result = obj.GetLocationDataFromDB("10");
-        Log.d("Over", "" + result.point.latitude + result.point.longitude + result.time);
+        LocationData result = obj.GetLocationDataFromDB("10");
+        Log.d("Over", "" + result.getPoint().getLatitude() + result.getPoint().getLongitude() + result.getTime());
     }
 
     @Test
@@ -39,11 +41,12 @@ public class ExampleUnitTest {
 
         // new LocationData(new Coordinate(17.43,78.36),"5", parseDate("2016-07-26-19-01-00")
         Date date = ClientBackend.parseDate("2016-07-26-19-01-00");
-        ClientBackend.Coordinate point = new ClientBackend.Coordinate(20.5,14.7);
-        ClientBackend.LocationData location = new ClientBackend.LocationData(point,"15",date);
+        Coordinate point = new Coordinate(20.5,14.7);
+        LocationData location = new LocationData(point,"15",date);
         boolean isSuccess = obj.GiveLocationDataToDB(location);
     }
 
+    @Test
     public void TestPutHttpRequestDirectly()
     {
 
