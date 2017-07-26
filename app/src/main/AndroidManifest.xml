@@ -20,15 +20,15 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAUYg_H_x0JbEHzvqnMqH-18Q3IqWUfb4A" />
 
-        <activity android:name=".MainPageActivity">
+        <activity android:name="views.MainPageActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PassengerActivity" />
-        <activity android:name=".DriverActivity" />
-        <activity android:name=".RouteActivity"></activity>
+        <activity android:name="views.PassengerActivity" />
+        <activity android:name="views.DriverActivity" />
+        <activity android:name="views.RouteActivity" />
     </application>
 
 </manifest>

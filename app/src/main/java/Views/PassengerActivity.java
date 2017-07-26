@@ -1,4 +1,4 @@
-package com.example.ramakrk.shuttletrackerms;
+package views;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +19,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 //import com.google.android.gms.drive.internal.StringListResponse;
+import com.example.ramakrk.shuttletrackerms.ClientBackend;
+import com.example.ramakrk.shuttletrackerms.R;
+import com.example.ramakrk.shuttletrackerms.Utils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,16 +31,20 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.Calendar;
 import java.util.Date;
+
+import models.*;
 
 public class PassengerActivity extends AppCompatActivity {
 
     private GoogleMap employeeMap;
     private Button trackShuttle;
-    public boolean Locationnotset = false;
     private CountDownTimer timerToDisplayStaleness = null;
     Toast mytoast;
+
+    ClientBackend clientBackendPassenger;
+
+    CountDownTimer timerToGetData = null;
 
     private void getRouteNumber() {
         AlertDialog routeDialog = new AlertDialog.Builder(PassengerActivity.this).create();
@@ -83,48 +90,6 @@ public class PassengerActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-        initialSetup();
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        trackShuttle = (Button) findViewById(R.id.track);
-        SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
-                employeeMap = googleMap;
-
-                SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-                String RouteNumber = sharedPreferences.getString("TrackRoute","-1");
-
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-
-                editor.putLong("LocationStaleness", -1);
-                editor.commit();
-
-                // Call a function to periodically update the bus location on Map.
-                UpdateBusLocationPeriodically(RouteNumber);
-            }
-
-        });
-
-        trackShuttle.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getRouteNumber();
-                //timerToGetData.cancel();
-            }
-        });
-
-        if(timerToDisplayStaleness!=null)
-        {
-            timerToDisplayStaleness.cancel();
-        }
-        UpdateLocationStalenessPeriodically(1000);
-    }
-
     private void UpdateLocationStalenessPeriodically(final int i)
     {
         timerToDisplayStaleness = new CountDownTimer(10000, i) {
@@ -167,10 +132,6 @@ public class PassengerActivity extends AppCompatActivity {
         }.start();
     }
 
-    CountDownTimer timerToGetData = null;
-
-    static int[] timeIntervals = {1,2,1,4,3,1,2,1,3,1,4,1,2,4,1,2,3,1,2,1};
-
     private void UpdateBusLocationPeriodically(final String routeNumber)
     {
         timerToGetData = new CountDownTimer(100000,5000)
@@ -178,22 +139,13 @@ public class PassengerActivity extends AppCompatActivity {
             int counter = 0;
             @Override
             public void onTick(long millisUntilFinished) {
-                ClientBackend object = new ClientBackend();
-                ClientBackend.LocationData currentLocation = object.GetLocationDataFromDBMimic(routeNumber);
+                LocationData currentLocation = clientBackendPassenger.GetLocationDataFromDB(routeNumber);
                 if(currentLocation != null) {
-                    ClientBackend.Coordinate currentPoint = currentLocation.point;
-                   // Date registeredTime = currentLocation.time;
-                    Date currentTime = ClientBackend.getCurrentLocalTime();
+                    Coordinate currentPoint = currentLocation.getPoint();
 
+                    Date registeredTime = currentLocation.getTime();
 
-                    Calendar tmp = Calendar.getInstance();
-                    tmp.add(Calendar.SECOND, timeIntervals[counter]);
-                    counter++;
-
-                    Date registeredTime = tmp.getTime();
-
-                   // long differenceInSeconds = getDifference(registeredTime, currentTime);
-
+                    Date currentTime = Utils.getCurrentLocalTime();
                     long differenceInSeconds = getDifference(currentTime, registeredTime);
 
                     // Use shared memory to store staleness time of location data.
@@ -208,14 +160,14 @@ public class PassengerActivity extends AppCompatActivity {
 
                     if (currentPoint != null) {
                         employeeMap.clear();
-                        LatLng bus = new LatLng(currentPoint.latitude, currentPoint.longitude);
+                        LatLng bus = new LatLng(currentPoint.getLatitude(), currentPoint.getLongitude());
                         employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.bus)).position(bus).title(routeNumber));
                         employeeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(bus, 15.0f));
                     } else {
                         Toast.makeText(PassengerActivity.this, "Server didn't return location for bus route " + routeNumber, Toast.LENGTH_SHORT).show();
                     }
 
-                    Location user = ClientBackend.getCurrentLatLongFromGPS(getBaseContext());
+                    Location user = clientBackendPassenger.getCurrentLatLongFromGPS(getBaseContext());
                     if (user != null) {
                         LatLng myLocation = new LatLng(user.getLatitude(), user.getLongitude());
                         employeeMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.usericon)).position(myLocation).title("You are here..."));
@@ -233,16 +185,14 @@ public class PassengerActivity extends AppCompatActivity {
 
             }
 
-
             @Override
             public void onFinish()
             {
                 timerToGetData.start();
             }
         };
+
         timerToGetData.start();
-
-
     }
 
     private long getDifference(Date early, Date late)
@@ -253,6 +203,53 @@ public class PassengerActivity extends AppCompatActivity {
         }
         return gapInSeconds;
     }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        initialSetup();
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_passenger);
+        trackShuttle = (Button) findViewById(R.id.track);
+        SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
+
+        clientBackendPassenger = new ClientBackend(getApplicationContext());
+
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                employeeMap = googleMap;
+
+                SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+                String RouteNumber = sharedPreferences.getString("TrackRoute","-1");
+
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                editor.putLong("LocationStaleness", -1);
+                editor.commit();
+
+                // Call a function to periodically update the bus location on Map.
+                UpdateBusLocationPeriodically(RouteNumber);
+            }
+
+        });
+
+        trackShuttle.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getRouteNumber();
+                //timerToGetData.cancel();
+            }
+        });
+
+        if(timerToDisplayStaleness!=null)
+        {
+            timerToDisplayStaleness.cancel();
+        }
+        UpdateLocationStalenessPeriodically(1000);
+    }
+
     @Override
     public void onBackPressed()
     {

@@ -1,4 +1,4 @@
-package com.example.ramakrk.shuttletrackerms;
+package views;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -13,6 +13,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.ramakrk.shuttletrackerms.R;
 
 public class MainPageActivity extends AppCompatActivity {
 
@@ -71,6 +73,14 @@ public class MainPageActivity extends AppCompatActivity {
         });
 
         
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        int a = 5;
+        //dummy
     }
     private boolean isNetworkConnected() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

@@ -1,30 +1,25 @@
-package com.example.ramakrk.shuttletrackerms;
+package views;
 
-import android.Manifest;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.CountDownTimer;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-import android.support.v4.widget.Space;
 
-public class DriverActivity extends AppCompatActivity {
+import com.example.ramakrk.shuttletrackerms.ClientBackend;
+import com.example.ramakrk.shuttletrackerms.R;
 
+public class DriverActivity extends AppCompatActivity
+{
     protected LocationManager locationManager;
     public double latitude,longitude;
     protected Button retrieveLocationButton;
@@ -62,7 +57,7 @@ public class DriverActivity extends AppCompatActivity {
                 String routeID = spinner.getSelectedItem().toString();
                 editor.putString("DriverRoute", routeID);
                 editor.commit();
-                clientBackendDriver = new ClientBackend(); //latitude,longitude);
+                clientBackendDriver = new ClientBackend(getApplicationContext()); //latitude,longitude);
                 clientBackendDriver.GiveLocationDataToDBWrapper(getBaseContext(), routeID);
             }
         });
@@ -80,7 +75,7 @@ public class DriverActivity extends AppCompatActivity {
     }
 
     private void Checkforconnection() {
-        Location location = ClientBackend.getCurrentLatLongFromGPS(DriverActivity.this);
+        Location location = clientBackendDriver.getCurrentLatLongFromGPS(DriverActivity.this);
         if(location==null)
         {
             Log.d("0,0","GPS VALUE IS NULL");
